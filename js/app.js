@@ -1,5 +1,7 @@
 import * as THREE from 'three';
-import Room from 'room';
+import {Room, PLANES_DEPTH, WALL_HEIGHT} from 'room';
+import Dartboard from 'dartboard'
+import Dart from 'dart'
 
 // Initialize all the needed stuff
 const scene = new THREE.Scene();
@@ -9,26 +11,56 @@ const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 // Move the camera
-camera.up.set(0,0,1);
+camera.up.set(0, 0, 1);
 camera.position.set(0, -5, 5)
 // camera.position.set(10,0, 0)  // side view
 camera.lookAt(0, 0, 0);
+
+// DEBUG
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
+
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
+
+// Configure the lights
+const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+scene.add(ambientLight);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+dirLight.position.set(100, -300, 300);
+dirLight.castShadow = true;
+dirLight.shadow.mapSize.width = 1024;
+dirLight.shadow.mapSize.height = 1024;
+dirLight.shadow.camera.left = -400;
+dirLight.shadow.camera.right = 350;
+dirLight.shadow.camera.top = 400;
+dirLight.shadow.camera.bottom = -300;
+dirLight.shadow.camera.near = 100;
+dirLight.shadow.camera.far = 800;
+scene.add(dirLight);
 
 // Add room floor and wall to the scene
 let room = new Room();
 scene.add(room);
 
-// const planeGeometry = new THREE.PlaneGeometry(10, 10);
-// const planeMaterial = new THREE.MeshBasicMaterial( {color: 0x4c72ad, side: THREE.DoubleSide} );
-// const room = new THREE.Mesh( planeGeometry, planeMaterial );
-// scene.add(room);
+// Load the dartboard
+(new Dartboard()).Load().then(obj => {
+  scene.add(obj);
+  obj.position.y = room.children[1].position.y - PLANES_DEPTH / 2;
+  obj.position.z = WALL_HEIGHT * 3 / 4;
+});
 
+// Load the dart
+(new Dart()).Load().then(obj => {
+  scene.add(obj);
+  obj.position.z = 1.5;
+});
 
 // Add the cube to the scene
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 const cube = new THREE.Mesh(geometry, material);
 // scene.add(cube);
+cube.position.set(0, 0, 1.5);
 
 // Define and add the animation loop
 function animate() {

@@ -1,14 +1,11 @@
-// function Room() {
-//   let room = new THREE.
-// }
 import * as THREE from 'three';
 
 const FLOOR_WIDTH = 10;
-const FLOOR_HEIGHT = 10;
-const WALL_HEIGHT = 5;
-const PLANES_DEPTH = 0.5;
+const FLOOR_HEIGHT = 20;
+export const WALL_HEIGHT = 10;
+export const PLANES_DEPTH = 0.5;
 
-export default class Room extends THREE.Group {
+export class Room extends THREE.Group {
   constructor() {
     super();
 
@@ -19,6 +16,7 @@ export default class Room extends THREE.Group {
         color: 0x660748ad, side: THREE.DoubleSide,
       })
     );
+    this.floor = floor;
     this.add(floor);
     // Define the wall
     const wall = new THREE.Mesh(
@@ -28,24 +26,9 @@ export default class Room extends THREE.Group {
       })
     );
     const floorSideY = floor.position.y + FLOOR_HEIGHT / 2;
-    wall.position.set(0, floorSideY, WALL_HEIGHT/2 - PLANES_DEPTH/2);
+    wall.position.set(0, floorSideY, WALL_HEIGHT / 2 - PLANES_DEPTH / 2);
     wall.rotation.x = Math.PI / 2;
+    this.wall = wall;
     this.add(wall);
-
-    // Define the floor
-    // const floorGeometry = new THREE.PlaneGeometry(10, 10);
-    // const floorMaterial = new THREE.MeshBasicMaterial({
-    //   color: 0x4c72ad, side: THREE.DoubleSide,
-    // });
-    // const floor = THREE.Mesh(floorGeometry, floorMaterial);
-    // this.add(floor);
-
-    // Define the wall
-    // const wallGeometry = new THREE.PlaneGeometry(10, 10);
-    // const wallMaterial = new THREE.MeshBasicMaterial({
-    //   color: 0x0748ad, side: THREE.DoubleSide,
-    // });
-    // const wall = THREE.Mesh(wallGeometry, wallMaterial);
-    // this.add(wall);
   }
 }
