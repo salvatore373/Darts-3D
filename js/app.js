@@ -1,7 +1,11 @@
 import * as THREE from 'three';
 import {Room, PLANES_DEPTH, WALL_HEIGHT} from 'room';
 import DartboardLoader from 'dartboard'
-import DartLoader from 'dart'
+import Dart from 'dart'
+import PhysicalObject from 'physical_object'
+
+// Initialize the list of Mesh objects that will populate the scene
+let sceneMeshes = [];
 
 // Initialize all the needed stuff
 const scene = new THREE.Scene();
@@ -29,46 +33,66 @@ scene.add(ambientLight);
 const dirLight = new THREE.DirectionalLight(0xffffff, 1);
 dirLight.position.set(0, -5, 3 * WALL_HEIGHT / 4);
 dirLight.castShadow = true;
-// dirLight.shadow.mapSize.width = 1024;
-// dirLight.shadow.mapSize.height = 1024;
-// dirLight.shadow.camera.left = -400;
-// dirLight.shadow.camera.right = 350;
-// dirLight.shadow.camera.top = 400;
-// dirLight.shadow.camera.bottom = -300;
-// dirLight.shadow.camera.near = 100;
-// dirLight.shadow.camera.far = 800;
 scene.add(dirLight);
 
 // Add room floor and wall to the scene
 let room = new Room();
 scene.add(room);
+sceneMeshes.push(...room.children);
+for (let c of room.children)
+  c.geometry.computeBoundingBox();
 
 // Load the dartboard
 DartboardLoader.Load().then(obj => {
   scene.add(obj);
+
+  sceneMeshes.push(obj);
+  obj.children[0].geometry.computeBoundingBox();
+
   obj.position.y = room.children[1].position.y - PLANES_DEPTH / 2;
   obj.position.z = WALL_HEIGHT * 3 / 4;
 });
 
 // Load the dart
-DartLoader.Load().then(obj => {
+Dart.Load().then(obj => {
   scene.add(obj);
+
+  sceneMeshes.push(obj);
+  obj.children[0].geometry.computeBoundingBox();
+
   obj.position.z = 1.5;
 });
 
-// Add the cube to the scene
+// Add cubes to the scene
+// Cube 1
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 const cube = new THREE.Mesh(geometry, material);
-// scene.add(cube);
-cube.position.set(0, 0, 1.5);
+let group1 = new THREE.Group();
+group1.add(cube);
+scene.add(group1);
+sceneMeshes.push(group1);
+group1.children[0].geometry.computeBoundingBox();
+group1.position.set(0, 0, PLANES_DEPTH + 5);
+// Cube 2
+const material2 = new THREE.MeshBasicMaterial({color: 0xfcba03});
+const cube2 = new THREE.Mesh(geometry, material2);
+let group2 = new THREE.Group();
+group2.add(cube2);
+scene.add(group2);
+sceneMeshes.push(group2);
+group2.children[0].geometry.computeBoundingBox();
+group2.position.set(0, 5, PLANES_DEPTH + 5);
+// Add physics
+let physicalCube1 = new PhysicalObject(group1, new THREE.Vector3(0, 0, 0));
+let physicalCube2 = new PhysicalObject(group2, new THREE.Vector3(0, 0, 0));
 
 // Define and add the animation loop
 function animate() {
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
-
   renderer.render(scene, camera);
+
+  physicalCube1.reactToCollision(sceneMeshes);
+  // physicalCube2.reactToCollision(sceneMeshes);
 }
 
 renderer.setAnimationLoop(animate);
