@@ -12,10 +12,11 @@ export class Room extends THREE.Group {
     // Define the floor
     const floor = new THREE.Mesh(
       new THREE.BoxGeometry(FLOOR_WIDTH, FLOOR_HEIGHT, PLANES_DEPTH),
-      new THREE.MeshBasicMaterial({
+      new THREE.MeshPhongMaterial({
         color: 0x660748ad, side: THREE.DoubleSide,
       })
     );
+    floor.receiveShadow = true;
     this.floor = floor;
     this.add(floor);
     // Define the wall
@@ -28,6 +29,8 @@ export class Room extends THREE.Group {
     const floorSideY = floor.position.y + FLOOR_HEIGHT / 2;
     wall.position.set(0, floorSideY, WALL_HEIGHT / 2 - PLANES_DEPTH / 2);
     wall.rotation.x = Math.PI / 2;
+    wall.receiveShadow = true;
+    wall.castShadow = true;
     this.wall = wall;
     this.add(wall);
   }
