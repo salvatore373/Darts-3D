@@ -34,6 +34,9 @@ function boxCollision(physObj1, obj2) {
   // box1.copy(mesh1.geometry.boundingBox).applyMatrix4(mesh1.matrixWorld);
   // box2.copy(mesh2.geometry.boundingBox).applyMatrix4(mesh2.matrixWorld);
 
+  if (box1.equals(box2))
+    return new CollisionInfo(false, new THREE.Vector3(0, 0, 0));
+
   box1.min.add(physObj1.velocity);
   box1.max.add(physObj1.velocity);
 
@@ -42,6 +45,7 @@ function boxCollision(physObj1, obj2) {
     box2.max.add(obj2.velocity);
   }
 
+  // TODO: replace with distance vector between boxes
   let center1 = new THREE.Vector3(0, 0, 0);
   box1.getCenter(center1);
   let center2 = new THREE.Vector3(0, 0, 0);
@@ -73,8 +77,11 @@ export default class PhysicalObject {
     for (let i = 0;
          i < sceneObjectsMeshes.length && (!handledCollisionX || !handledCollisionY || !handledCollisionZ);
          i++) {
-      let sceneObjMesh = sceneObjectsMeshes[0];
+      let sceneObjMesh = sceneObjectsMeshes[i];
       let collisionInfo = boxCollision(this, sceneObjMesh);
+
+      // TODO: make reaction proportional to the portion of the segment that connects the centers
+      //  that is inside the intersection between the boxes
 
       if (collisionInfo.isColliding) {
         if (collisionInfo.collisionDirection.x !== 0 && !handledCollisionX) {
@@ -101,16 +108,9 @@ export default class PhysicalObject {
     }
   }
 
-  applyGravity(room) {
-    this.velocity.y += GRAVITY;
-
-    // this is where we hit the ground
-    let collisionInfo = boxCollision()
-    if (
-      roomCollision(this.objectMesh, ground)
-    ) {
-      this.velocity.y *= FRICTION_FACTOR
-      this.velocity.y = -this.velocity.y
-    } else this.position.y += this.velocity.y
+  updatePosition() {
+    this.object.position.x += this.velocity.x;
+    this.object.position.y += this.velocity.y;
+    this.object.position.z += this.velocity.z;
   }
 }

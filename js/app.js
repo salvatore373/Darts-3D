@@ -69,7 +69,9 @@ const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 const cube = new THREE.Mesh(geometry, material);
 let group1 = new THREE.Group();
+const boxGroup1 = new THREE.BoxHelper(cube, 0xffff00);
 group1.add(cube);
+group1.add(boxGroup1);
 scene.add(group1);
 sceneMeshes.push(group1);
 group1.children[0].geometry.computeBoundingBox();
@@ -79,12 +81,12 @@ const material2 = new THREE.MeshBasicMaterial({color: 0xfcba03});
 const cube2 = new THREE.Mesh(geometry, material2);
 let group2 = new THREE.Group();
 group2.add(cube2);
-scene.add(group2);
-sceneMeshes.push(group2);
+// scene.add(group2);
+// sceneMeshes.push(group2);
 group2.children[0].geometry.computeBoundingBox();
 group2.position.set(0, 5, PLANES_DEPTH + 5);
 // Add physics
-let physicalCube1 = new PhysicalObject(group1, new THREE.Vector3(0, 0, 0));
+let physicalCube1 = new PhysicalObject(group1, new THREE.Vector3(0, 0.8, 0));
 let physicalCube2 = new PhysicalObject(group2, new THREE.Vector3(0, 0, 0));
 
 // Define and add the animation loop
@@ -92,6 +94,7 @@ function animate() {
   renderer.render(scene, camera);
 
   physicalCube1.reactToCollision(sceneMeshes);
+  physicalCube1.updatePosition();
   // physicalCube2.reactToCollision(sceneMeshes);
 }
 
