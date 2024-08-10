@@ -86,7 +86,7 @@ group2.add(cube2);
 group2.children[0].geometry.computeBoundingBox();
 group2.position.set(0, 5, PLANES_DEPTH + 5);
 // Add physics
-let physicalCube1 = new PhysicalObject(group1, new THREE.Vector3(0, 0.8, 0));
+let physicalCube1 = new PhysicalObject(group1, new THREE.Vector3(0, 0, 0));
 let physicalCube2 = new PhysicalObject(group2, new THREE.Vector3(0, 0, 0));
 
 // Define and add the animation loop

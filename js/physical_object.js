@@ -40,19 +40,35 @@ function boxCollision(physObj1, obj2) {
   box1.min.add(physObj1.velocity);
   box1.max.add(physObj1.velocity);
 
-  if(obj2 instanceof PhysicalObject) {
+  if (obj2 instanceof PhysicalObject) {
     box2.min.add(obj2.velocity);
     box2.max.add(obj2.velocity);
   }
 
-  // TODO: replace with distance vector between boxes
-  let center1 = new THREE.Vector3(0, 0, 0);
-  box1.getCenter(center1);
-  let center2 = new THREE.Vector3(0, 0, 0);
-  box2.getCenter(center2);
-  let centersSub = center1.sub(center2);
+  // Get the shortest dimension of intersection box between boxes
+  let intersection = new THREE.Box3();
+  intersection.copy(box1);
+  intersection.intersect(box2);
+  let xDist = intersection.max.x - intersection.min.x;
+  let yDist = intersection.max.y - intersection.min.y;
+  let zDist = intersection.max.z - intersection.min.z;
+  let minDist = Math.min(xDist, yDist, zDist);
+  if (minDist === xDist) {
+    // The real vector is not meaningful, just care that the x component is != 0
+    return new CollisionInfo(box1.intersectsBox(box2), new THREE.Vector3(xDist, 0, 0));
+  } else if (minDist === yDist) {
+    return new CollisionInfo(box1.intersectsBox(box2), new THREE.Vector3(0, yDist, 0));
+  } else {
+    return new CollisionInfo(box1.intersectsBox(box2), new THREE.Vector3(0, 0, zDist));
+  }
 
-  return new CollisionInfo(box1.intersectsBox(box2), centersSub);
+  // let center1 = new THREE.Vector3(0, 0, 0);
+  // box1.getCenter(center1);
+  // let center2 = new THREE.Vector3(0, 0, 0);
+  // box2.getCenter(center2);
+  // let centersSub = center1.sub(center2);
+  //
+  // return new CollisionInfo(box1.intersectsBox(box2), centersSub);
 }
 
 export default class PhysicalObject {
@@ -84,20 +100,24 @@ export default class PhysicalObject {
       //  that is inside the intersection between the boxes
 
       if (collisionInfo.isColliding) {
+        this.velocity.x *= FRICTION_FACTOR;
+        this.velocity.y *= FRICTION_FACTOR;
+        this.velocity.z *= FRICTION_FACTOR;
+
         if (collisionInfo.collisionDirection.x !== 0 && !handledCollisionX) {
           handledCollisionX = true;
-          this.velocity.x *= FRICTION_FACTOR;
+          // this.velocity.x *= FRICTION_FACTOR;
           this.velocity.x = -this.velocity.x;
         }
         if (collisionInfo.collisionDirection.y !== 0 && !handledCollisionY) {
           handledCollisionY = true;
-          this.velocity.y *= FRICTION_FACTOR;
+          // this.velocity.y *= FRICTION_FACTOR;
           this.velocity.y = -this.velocity.y;
         }
 
         if (collisionInfo.collisionDirection.z !== 0 && !handledCollisionZ) {
           handledCollisionZ = true;
-          this.velocity.z *= FRICTION_FACTOR;
+          // this.velocity.z *= FRICTION_FACTOR;
           this.velocity.z = -this.velocity.z;
         }
       }
