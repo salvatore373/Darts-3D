@@ -42,9 +42,9 @@ export class DartLoader {
 export class PhysicsDart extends PhysicalObject {
   isAttachedToDartboard = false;
 
-  updatePosition() {
+  updatePosition(sceneObjectsMeshes) {
     if (!this.isAttachedToDartboard)
-      super.updatePosition();
+      super.updatePosition(sceneObjectsMeshes);
   }
 
   reactToCollision(sceneObjectsMeshes) {

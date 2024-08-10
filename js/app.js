@@ -23,7 +23,7 @@ camera.position.set(-5, 0, 3 * WALL_HEIGHT / 4 )
 
 // DEBUG
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
-
+// DEBUG
 const controls = new OrbitControls(camera, renderer.domElement)
 controls.enableDamping = true
 
@@ -102,8 +102,7 @@ function animate() {
   renderer.render(scene, camera);
 
   if (dartPhysObj != null) {
-    dartPhysObj.reactToCollision(sceneMeshes);
-    dartPhysObj.updatePosition();
+    dartPhysObj.updatePosition(sceneMeshes);
   }
 
   // physicalCube1.reactToCollision(sceneMeshes);

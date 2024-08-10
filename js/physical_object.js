@@ -138,7 +138,9 @@ export class PhysicalObject {
     return collidingObjs;
   }
 
-  updatePosition() {
+  updatePosition(sceneObjectsMeshes) {
+    this.reactToCollision(sceneObjectsMeshes);
+
     this.object.position.x += this.velocity.x;
     this.object.position.y += this.velocity.y;
     this.object.position.z += this.velocity.z;
