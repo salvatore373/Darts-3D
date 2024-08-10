@@ -26,7 +26,7 @@ class CollisionInfo {
 /**
  * Check for a collision between a PhysicalObject and another object
  */
-function boxCollision(physObj1, obj2) {
+export function boxCollision(physObj1, obj2) {
   const box1 = new THREE.Box3().setFromObject(physObj1.object);
   const box2 = new THREE.Box3().setFromObject(obj2 instanceof PhysicalObject ? obj2.object : obj2);
   // const box1 = new THREE.Box3();
@@ -58,8 +58,10 @@ function boxCollision(physObj1, obj2) {
     return new CollisionInfo(box1.intersectsBox(box2), new THREE.Vector3(xDist, 0, 0));
   } else if (minDist === yDist) {
     return new CollisionInfo(box1.intersectsBox(box2), new THREE.Vector3(0, yDist, 0));
-  } else {
+  } else if (minDist === zDist) {
     return new CollisionInfo(box1.intersectsBox(box2), new THREE.Vector3(0, 0, zDist));
+  } else {
+    return new CollisionInfo(box1.intersectsBox(box2), new THREE.Vector3(0, 0, 0));
   }
 
   // let center1 = new THREE.Vector3(0, 0, 0);
@@ -71,7 +73,7 @@ function boxCollision(physObj1, obj2) {
   // return new CollisionInfo(box1.intersectsBox(box2), centersSub);
 }
 
-export default class PhysicalObject {
+export class PhysicalObject {
   constructor(object, velocity) {
     this.setObject(object);
     this.velocity = velocity; // Vector3
@@ -90,6 +92,10 @@ export default class PhysicalObject {
     let handledCollisionY = false;
     let handledCollisionZ = false;
 
+    // The list of the objects of the scene that are colliding with this object. This list may
+    // not be complete if more than 1 object is colliding on the same direction.
+    let collidingObjs = []
+
     for (let i = 0;
          i < sceneObjectsMeshes.length && (!handledCollisionX || !handledCollisionY || !handledCollisionZ);
          i++) {
@@ -100,6 +106,8 @@ export default class PhysicalObject {
       //  that is inside the intersection between the boxes
 
       if (collisionInfo.isColliding) {
+        collidingObjs.push(sceneObjMesh);
+
         this.velocity.x *= FRICTION_FACTOR;
         this.velocity.y *= FRICTION_FACTOR;
         this.velocity.z *= FRICTION_FACTOR;
@@ -126,6 +134,8 @@ export default class PhysicalObject {
     if (!handledCollisionZ) {
       this.object.position.z += this.velocity.z;
     }
+
+    return collidingObjs;
   }
 
   updatePosition() {

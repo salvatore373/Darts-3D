@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import {Room, PLANES_DEPTH, WALL_HEIGHT} from 'room';
-import DartboardLoader from 'dartboard'
-import Dart from 'dart'
-import PhysicalObject from 'physical_object'
+import {DartboardLoader, DARTBOARD_LABEL} from 'dartboard'
+import {DartLoader, DART_LABEL, PhysicsDart} from 'dart'
+import {PhysicalObject} from 'physical_object'
 
 // Initialize the list of Mesh objects that will populate the scene
 let sceneMeshes = [];
@@ -17,9 +17,9 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 // Move the camera
 camera.up.set(0, 0, 1);
-camera.position.set(0, -5, 3 * WALL_HEIGHT / 4)
+camera.position.set(-5, 0, 3 * WALL_HEIGHT / 4 )
 // camera.position.set(10,0, 0)  // side view
-camera.lookAt(0, 0, 0);
+// camera.lookAt(0, 0, 3 * WALL_HEIGHT / 4);
 
 // DEBUG
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
@@ -51,18 +51,26 @@ DartboardLoader.Load().then(obj => {
 
   obj.position.y = room.children[1].position.y - PLANES_DEPTH / 2;
   obj.position.z = WALL_HEIGHT * 3 / 4;
+
+  camera.lookAt(obj.position.x, obj.position.y, obj.position.z);
 });
 
 // Load the dart
-Dart.Load().then(obj => {
+let dartPhysObj = null;
+DartLoader.Load().then(obj => {
   scene.add(obj);
 
   sceneMeshes.push(obj);
   obj.children[0].geometry.computeBoundingBox();
 
-  obj.position.z = 1.5;
+  dartPhysObj = new PhysicsDart(obj, new THREE.Vector3(0, 0.8, 0));
+
+  // obj.position.z = 1.5;
+  obj.position.z = (3/4) * WALL_HEIGHT;
+  obj.position.y = 5.5;
 });
 
+/*
 // Add cubes to the scene
 // Cube 1
 const geometry = new THREE.BoxGeometry(1, 1, 1);
@@ -87,14 +95,19 @@ group2.children[0].geometry.computeBoundingBox();
 group2.position.set(0, 5, PLANES_DEPTH + 5);
 // Add physics
 let physicalCube1 = new PhysicalObject(group1, new THREE.Vector3(0, 0, 0));
-let physicalCube2 = new PhysicalObject(group2, new THREE.Vector3(0, 0, 0));
+let physicalCube2 = new PhysicalObject(group2, new THREE.Vector3(0, 0, 0));*/
 
 // Define and add the animation loop
 function animate() {
   renderer.render(scene, camera);
 
-  physicalCube1.reactToCollision(sceneMeshes);
-  physicalCube1.updatePosition();
+  if (dartPhysObj != null) {
+    dartPhysObj.reactToCollision(sceneMeshes);
+    dartPhysObj.updatePosition();
+  }
+
+  // physicalCube1.reactToCollision(sceneMeshes);
+  // physicalCube1.updatePosition();
   // physicalCube2.reactToCollision(sceneMeshes);
 }
 

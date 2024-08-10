@@ -1,10 +1,14 @@
 import * as THREE from 'three';
 import * as utils from 'utils'
+import {PhysicalObject, boxCollision} from "physical_object";
+import {DARTBOARD_LABEL} from "dartboard";
 
 const objPath = './assets/throwing_dart_v1_L3.123cce958837-fa5f-4635-8f4a-9e4d59dbe115/11750_throwing_dart_v1_L3.obj';
 const texturePath = './assets/throwing_dart_v1_L3.123cce958837-fa5f-4635-8f4a-9e4d59dbe115/11750_throwing_dart_v1_L3.mtl';
 
-export default class Dart {
+export const DART_LABEL = "dart";
+
+export class DartLoader {
   // constructor() {
   //   super(undefined, THREE.Vector3(0, 0, 0));
   //
@@ -25,6 +29,38 @@ export default class Dart {
     obj.children[0].castShadow = true;
     obj.children[0].receiveShadow = true;
 
+    obj.name = DART_LABEL;
+
     return obj;
+  }
+}
+
+
+/**
+ * An extension of PhysicalObject that makes the dart stay attached to the dartboard when it is hit.
+ */
+export class PhysicsDart extends PhysicalObject {
+  isAttachedToDartboard = false;
+
+  updatePosition() {
+    if (!this.isAttachedToDartboard)
+      super.updatePosition();
+  }
+
+  reactToCollision(sceneObjectsMeshes) {
+    if (!this.isAttachedToDartboard) {
+      let collidingObjs = super.reactToCollision(sceneObjectsMeshes);
+
+      for (let sceneObj of collidingObjs) {
+        if (sceneObj.name === DARTBOARD_LABEL) {
+          // Stop the dart from moving
+          this.velocity.x = 0;
+          this.velocity.y = 0;
+          this.velocity.z = 0;
+          // Stop updating the dart's position
+          this.isAttachedToDartboard = true;
+        }
+      }
+    }
   }
 }
