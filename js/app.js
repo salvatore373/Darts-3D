@@ -103,7 +103,7 @@ let physicalCube2 = new PhysicalObject(group2, new THREE.Vector3(0, 0, 0));*/
 
 const reflectingTable = new ReflectingTable();
 scene.add(reflectingTable);
-reflectingTable.position.set(1, 1.1, 1.5);
+reflectingTable.position.set(1, 1.1, 1.25);
 
 // Define and add the animation loop
 function animate() {
