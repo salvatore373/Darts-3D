@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {Room, PLANES_DEPTH, WALL_HEIGHT} from 'room';
 import {DartboardLoader, DARTBOARD_LABEL} from 'dartboard'
 import {DartLoader, DART_LABEL, PhysicsDart} from 'dart'
-import ReflectingTable from 'reflecting_table'
+import {PhysicalObject} from 'physical_object'
 
 // Initialize the list of Mesh objects that will populate the scene
 let sceneMeshes = [];
@@ -23,13 +23,13 @@ camera.lookAt(0, 0, 0);
 // camera.position.set(10,0, 0)  // side view
 // camera.lookAt(0, 0, 3 * WALL_HEIGHT / 4);
 
-scene.background = new THREE.Color( 0x7792cc );
+scene.background = new THREE.Color( 0x6292cc );
 
 // DEBUG
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
 // DEBUG
-const orbitControls = new OrbitControls(camera, renderer.domElement)
-orbitControls.enableDamping = true
+const controls = new OrbitControls(camera, renderer.domElement)
+controls.enableDamping = true
 
 // Configure the lights
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -101,13 +101,9 @@ group2.position.set(0, 5, PLANES_DEPTH + 5);
 let physicalCube1 = new PhysicalObject(group1, new THREE.Vector3(0, 0, 0));
 let physicalCube2 = new PhysicalObject(group2, new THREE.Vector3(0, 0, 0));*/
 
-const reflectingTable = new ReflectingTable();
-scene.add(reflectingTable);
-reflectingTable.position.set(1, 1.1, 1.5);
-
 // Define and add the animation loop
 function animate() {
-  reflectingTable.updateCamera(renderer, scene);
+  tableCamera.update(renderer,scene);
   renderer.render(scene, camera);
 
   if (dartPhysObj != null) {
