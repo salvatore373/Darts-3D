@@ -23,7 +23,7 @@ camera.lookAt(0, 0, 0);
 // camera.position.set(10,0, 0)  // side view
 // camera.lookAt(0, 0, 3 * WALL_HEIGHT / 4);
 
-scene.background = new THREE.Color( 0x7792cc );
+scene.background = new THREE.Color(0x7792cc);
 
 // DEBUG
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
@@ -101,9 +101,22 @@ group2.position.set(0, 5, PLANES_DEPTH + 5);
 let physicalCube1 = new PhysicalObject(group1, new THREE.Vector3(0, 0, 0));
 let physicalCube2 = new PhysicalObject(group2, new THREE.Vector3(0, 0, 0));*/
 
+// Put a table in the scene
 const reflectingTable = new ReflectingTable();
 scene.add(reflectingTable);
 reflectingTable.position.set(1, 1.1, 1.25);
+
+// Put the remaining darts on the table
+for (let i = 0; i < 2; i++) {
+  DartLoader.Load().then(obj => {
+    scene.add(obj);
+
+    sceneMeshes.push(obj);
+    obj.children[0].geometry.computeBoundingBox();
+
+    reflectingTable.putOnTable(obj);
+  });
+}
 
 // Define and add the animation loop
 function animate() {

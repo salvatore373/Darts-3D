@@ -6,14 +6,18 @@ const TABLE_DEPTH = .1;
 const TABLE_WIDTH = 3;
 const TABLE_HEIGHT = 3;
 
+const MAX_NUM_OBJS_ON_TABLE_PER_ROW = 2;
+const MAX_NUM_OBJS_ON_TABLE_PER_COL = 1;
+const MAX_NUM_OBJS_ON_TABLE = MAX_NUM_OBJS_ON_TABLE_PER_ROW + MAX_NUM_OBJS_ON_TABLE_PER_COL;
+
 export default class ReflectingTable extends THREE.Object3D {
   constructor() {
     super();
-    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(128, {
+    const cubeRenderTarget = new THREE.WebGLCubeRenderTarget(720, {
       generateMipmaps: true,
       minFilter: THREE.LinearMipmapLinearFilter,
     });
-    this.cubeCamera = new THREE.CubeCamera(0.1, 100, cubeRenderTarget);
+    this.cubeCamera = new THREE.CubeCamera(1, 100, cubeRenderTarget);
     const material = new THREE.MeshPhongMaterial({
       envMap: cubeRenderTarget.texture,
     });
@@ -37,9 +41,24 @@ export default class ReflectingTable extends THREE.Object3D {
     this.add(tableFoot);
 
     this.height = TABLE_DEPTH + FOOT_HEIGHT;
+    this.numObjectsOnTable = 0;
   }
 
   updateCamera(renderer, scene) {
     this.cubeCamera.update(renderer, scene);
+  }
+
+  putOnTable(object) {
+    if (this.numObjectsOnTable < MAX_NUM_OBJS_ON_TABLE) {
+      let xPos = (this.numObjectsOnTable % MAX_NUM_OBJS_ON_TABLE_PER_ROW + 1) * TABLE_WIDTH / (MAX_NUM_OBJS_ON_TABLE_PER_ROW + 1);
+      let yPos = (Math.floor(this.numObjectsOnTable / MAX_NUM_OBJS_ON_TABLE_PER_COL) % MAX_NUM_OBJS_ON_TABLE_PER_COL + 1) * TABLE_WIDTH / (MAX_NUM_OBJS_ON_TABLE_PER_COL + 1);
+      this.numObjectsOnTable++;
+
+      object.position.x = (this.position.x-(TABLE_WIDTH/2)) + xPos;
+      object.position.y = (this.position.y-(TABLE_HEIGHT/2)) + yPos;
+      object.position.z = this.position.z + TABLE_DEPTH;
+    } else {
+      console.error("The table is full. Cannot put any new element on it.")
+    }
   }
 }
