@@ -3,6 +3,7 @@ import {Room, PLANES_DEPTH, WALL_HEIGHT} from 'room';
 import {DartboardLoader, DARTBOARD_LABEL} from 'dartboard'
 import {DartLoader, DART_LABEL, PhysicsDart} from 'dart'
 import ReflectingTable from 'reflecting_table'
+import {actionKeys} from 'user_interaction'
 
 // Initialize the list of Mesh objects that will populate the scene
 let sceneMeshes = [];
@@ -67,7 +68,8 @@ DartLoader.Load().then(obj => {
   sceneMeshes.push(obj);
   obj.children[0].geometry.computeBoundingBox();
 
-  dartPhysObj = new PhysicsDart(obj, new THREE.Vector3(0, 0.8, 0));
+  dartPhysObj = new PhysicsDart(obj, new THREE.Vector3(0, 0, 0));
+  dartPhysObj.freezePosition();
 
   // obj.position.z = 1.5;
   obj.position.z = (3 / 4) * WALL_HEIGHT;
@@ -125,6 +127,10 @@ function animate() {
 
   if (dartPhysObj != null) {
     dartPhysObj.updatePosition(sceneMeshes);
+
+    if(actionKeys.SPACEBAR && !dartPhysObj.launched) {
+      dartPhysObj.launch(0, 0.8, 0);
+    }
   }
 
   // physicalCube1.reactToCollision(sceneMeshes);

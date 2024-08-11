@@ -40,15 +40,20 @@ export class DartLoader {
  * An extension of PhysicalObject that makes the dart stay attached to the dartboard when it is hit.
  */
 export class PhysicsDart extends PhysicalObject {
-  isAttachedToDartboard = false;
+  launched = false;
+  isPositionFrozen = false;
+
+  freezePosition() {
+    this.isPositionFrozen = true;
+  }
 
   updatePosition(sceneObjectsMeshes) {
-    if (!this.isAttachedToDartboard)
+    if (!this.isPositionFrozen)
       super.updatePosition(sceneObjectsMeshes);
   }
 
   reactToCollision(sceneObjectsMeshes) {
-    if (!this.isAttachedToDartboard) {
+    if (!this.isPositionFrozen) {
       let collidingObjs = super.reactToCollision(sceneObjectsMeshes);
 
       for (let sceneObj of collidingObjs) {
@@ -58,9 +63,15 @@ export class PhysicsDart extends PhysicalObject {
           this.velocity.y = 0;
           this.velocity.z = 0;
           // Stop updating the dart's position
-          this.isAttachedToDartboard = true;
+          this.freezePosition();
         }
       }
     }
+  }
+
+  launch(velocityX, velocityY, velocityZ) {
+    this.isPositionFrozen = false;
+    this.launched = true;
+    this.velocity = new THREE.Vector3(velocityX, velocityY, velocityZ);
   }
 }
