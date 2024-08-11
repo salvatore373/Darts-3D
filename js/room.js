@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import * as Colors from 'colors'
 
 const FLOOR_WIDTH = 10;
 const FLOOR_HEIGHT = 20;
@@ -13,7 +14,7 @@ export class Room extends THREE.Group {
     const floor = new THREE.Mesh(
       new THREE.BoxGeometry(FLOOR_WIDTH, FLOOR_HEIGHT, PLANES_DEPTH),
       new THREE.MeshPhongMaterial({
-        color: 0x660748ad, side: THREE.DoubleSide,
+        color: Colors.PRIMARY_COLOR, side: THREE.DoubleSide,
       })
     );
     floor.receiveShadow = true;
@@ -23,7 +24,7 @@ export class Room extends THREE.Group {
     const wall = new THREE.Mesh(
       new THREE.BoxGeometry(FLOOR_WIDTH, WALL_HEIGHT, PLANES_DEPTH),
       new THREE.MeshBasicMaterial({
-        color: 0x4c72ad, side: THREE.DoubleSide,
+        color: Colors.SECONDARY_COLOR, side: THREE.DoubleSide,
       })
     );
     const floorSideY = floor.position.y + FLOOR_HEIGHT / 2;
