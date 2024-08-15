@@ -1,0 +1,48 @@
+#force-selector {
+  width: 300px;
+  height: 30px;
+  background: linear-gradient(to right,
+  red,
+  yellow,
+  green,
+  yellow,
+  red);
+  position: relative;
+  margin: 20px;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+#force-selector-indicator {
+  width: 10px;
+  height: 30px;
+  background-color: black;
+  position: absolute;
+  top: 0;
+  border-radius: 5px;
+}
+
+#force-selector-floating-text {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+  color: white;
+  opacity: 1;
+  transition: opacity 1s ease-out;
+}
+
+.fade-out {
+  animation: fadeOutUp 1s forwards;
+}
+
+@keyframes fadeOutUp {
+  0% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}

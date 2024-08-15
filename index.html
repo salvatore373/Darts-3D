@@ -26,21 +26,36 @@
       "imports": {
         "three": "https://cdn.jsdelivr.net/npm/three@v0.167.1/build/three.module.js",
         "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.167.1/examples/jsm/",
-        "room": "/js/room.js",
-        "dartboard": "/js/dartboard.js",
-        "dart": "/js/dart.js",
-        "physical_object": "/js/physical_object.js",
-        "reflecting_table": "/js/reflecting_table.js",
-        "user_interaction": "/js/user_interaction.js",
-        "colors": "/js/colors.js",
-        "utils": "/js/utils.js"
+        "room": "./js/room.js",
+        "dartboard": "./js/dartboard.js",
+        "dart": "./js/dart.js",
+        "physical_object": "./js/physical_object.js",
+        "reflecting_table": "./js/reflecting_table.js",
+        "user_interaction": "./js/user_interaction.js",
+        "colors": "./js/colors.js",
+        "utils": "./js/utils.js"
       }
     }
   </script>
+
+  <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script>
+    $(function() {
+      $("#includeHtml").load("./html/force_selector.html");
+    });
+  </script>
+
+
 </head>
 
 <body>
   <script type="module" src="js/app.js"></script>
+  <div id="game-container">
+    <canvas id="game-view"></canvas>
+
+    <div id="includeHtml"></div>
+    </div>
+
 
 </body>
 

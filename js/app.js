@@ -11,7 +11,7 @@ let sceneMeshes = [];
 // Initialize all the needed stuff
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 50);
-const renderer = new THREE.WebGLRenderer();
+const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('game-view')});
 renderer.shadowMap.enabled = true;  // Enable shadows
 // Scale if the game becomes performance intensive (and try adding false as thrid argument)
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -128,7 +128,7 @@ function animate() {
   if (dartPhysObj != null) {
     dartPhysObj.updatePosition(sceneMeshes);
 
-    if(actionKeys.SPACEBAR && !dartPhysObj.launched) {
+    if (actionKeys.SPACEBAR && !dartPhysObj.launched) {
       dartPhysObj.launch(0, 0.8, 0);
     }
   }

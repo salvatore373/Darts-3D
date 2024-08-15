@@ -1,0 +1,38 @@
+@import url("https://fonts.googleapis.com/css?family=Press+Start+2P");
+
+.center-element {
+  grid-area: center_el;
+}
+
+.left-element {
+  grid-area: left_el;
+  place-self: center left;
+}
+
+.right-element {
+  grid-area: right_el;
+  place-self: center right;
+}
+
+.row {
+  display: grid;
+  align-items: center;
+  grid-template-areas: 'left_el center_el center_el right_el';
+  gap: 10px;
+  font-family: "Press Start 2P", cursive;
+  background-color: #2196F3;
+}
+
+.row > div {
+  background-color: rgba(255, 255, 255, 0.8); /*DEBUG*/
+  text-align: center;
+  margin: 10px 20px;
+  font-size: 23px;
+}
+
+.clickable-element {
+  &:hover {
+    box-shadow: 0 0.25em 0.25em -0.1em;
+    transform: translateY(-0.25em);
+  }
+}
