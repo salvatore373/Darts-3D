@@ -11,6 +11,15 @@ const BAD_DIRECTION_RIGHT = 3;
 const GOOD_DIRECTION_RIGHT = 4;
 const GREAT_DIRECTION = 2;
 
+// Export the constants
+window.directionBarConstants = {
+  BAD_DIRECTION_LEFT: BAD_DIRECTION_LEFT,
+  GOOD_DIRECTION_LEFT: GOOD_DIRECTION_LEFT,
+  BAD_DIRECTION_RIGHT: BAD_DIRECTION_RIGHT,
+  GOOD_DIRECTION_RIGHT: GOOD_DIRECTION_RIGHT,
+  GREAT_DIRECTION: GREAT_DIRECTION,
+}
+
 function moveDirectionIndicator() {
   angle += speed * direction;
 
@@ -56,6 +65,7 @@ function startDirectionIndicatorMotion() {
     function onSpaceBarPressed(event) {
       let res;
       if (event.code === 'Space') {
+        event.preventDefault();
         res = stopDirectionIndicator();
       }
       document.removeEventListener('keydown', onSpaceBarPressed);

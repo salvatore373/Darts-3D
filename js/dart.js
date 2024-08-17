@@ -54,6 +54,8 @@ export class PhysicsDart extends PhysicalObject {
 
   reactToCollision(sceneObjectsMeshes) {
     if (!this.isPositionFrozen) {
+      // Do not collide with other darts
+      sceneObjectsMeshes = sceneObjectsMeshes.filter((dart) => dart.name !== DART_LABEL);
       let collidingObjs = super.reactToCollision(sceneObjectsMeshes);
 
       for (let sceneObj of collidingObjs) {

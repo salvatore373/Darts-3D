@@ -11,6 +11,13 @@ const BAD_FORCE = 0;
 const GOOD_FORCE = 1;
 const GREAT_FORCE = 2;
 
+// Export the constants
+window.forceBarConstants = {
+  BAD_FORCE: BAD_FORCE,
+  GOOD_FORCE: GOOD_FORCE,
+  GREAT_FORCE: GREAT_FORCE
+}
+
 // Function to move the indicator
 function moveForceIndicator() {
   position += speed * direction;
@@ -57,6 +64,7 @@ function startForceIndicatorMotion() {
     let res;
     function onSpaceBarPressed(event) {
       if (event.code === 'Space') {
+        event.preventDefault();
         res = stopForceIndicator();
       }
       document.removeEventListener('keydown', onSpaceBarPressed);

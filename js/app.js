@@ -3,7 +3,16 @@ import {Room, PLANES_DEPTH, WALL_HEIGHT} from 'room';
 import {DartboardLoader, DARTBOARD_LABEL} from 'dartboard'
 import {DartLoader, DART_LABEL, PhysicsDart} from 'dart'
 import ReflectingTable from 'reflecting_table'
-import {actionKeys} from 'user_interaction'
+
+// The coordinates where the dart should be placed when it has to be launched
+const THROWING_POSITION = new THREE.Vector3(0, 5.5, (3 / 4) * WALL_HEIGHT);
+// A reference to the dart to be launched (as PhysicsDart)
+let dartToBeLaunched;
+// The list of the remaining darts (as THREE.Group)
+let remainingDarts = [];
+
+// The points scored by the player
+let score = 0;
 
 // Initialize the list of Mesh objects that will populate the scene
 let sceneMeshes = [];
@@ -15,14 +24,15 @@ const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('game-
 renderer.shadowMap.enabled = true;  // Enable shadows
 // Scale if the game becomes performance intensive (and try adding false as thrid argument)
 renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
+// document.body.appendChild(renderer.domElement);
+document.getElementById('game-container').appendChild(renderer.domElement);
 // Move the camera
 camera.up.set(0, 0, 1);
 // camera.position.set(-5, 0, 3 * WALL_HEIGHT / 4 )
 camera.position.set(0, 0, 3 * WALL_HEIGHT / 4)
-camera.lookAt(0, 0, 0);
+// camera.lookAt(0, 0, 0);
 // camera.position.set(10,0, 0)  // side view
-// camera.lookAt(0, 0, 3 * WALL_HEIGHT / 4);
+camera.lookAt(0, 0, 3 * WALL_HEIGHT / 4);
 
 scene.background = new THREE.Color(0x7792cc);
 
@@ -44,8 +54,7 @@ scene.add(dirLight);
 let room = new Room();
 scene.add(room);
 sceneMeshes.push(...room.children);
-for (let c of room.children)
-  c.geometry.computeBoundingBox();
+for (let c of room.children) c.geometry.computeBoundingBox();
 
 // Load the dartboard
 DartboardLoader.Load().then(obj => {
@@ -60,20 +69,19 @@ DartboardLoader.Load().then(obj => {
   // camera.lookAt(obj.position.x, obj.position.y, obj.position.z);
 });
 
-// Load the dart
-let dartPhysObj = null;
+// Load the dart to be launched
 DartLoader.Load().then(obj => {
   scene.add(obj);
 
   sceneMeshes.push(obj);
   obj.children[0].geometry.computeBoundingBox();
 
-  dartPhysObj = new PhysicsDart(obj, new THREE.Vector3(0, 0, 0));
-  dartPhysObj.freezePosition();
+  dartToBeLaunched = new PhysicsDart(obj, new THREE.Vector3(0, 0, 0));
+  dartToBeLaunched.freezePosition();
 
-  // obj.position.z = 1.5;
-  obj.position.z = (3 / 4) * WALL_HEIGHT;
-  obj.position.y = 5.5;
+  // obj.position.z = (3 / 4) * WALL_HEIGHT;
+  // obj.position.y = 5.5;
+  obj.position.copy(THROWING_POSITION);
 });
 
 /*
@@ -117,6 +125,8 @@ for (let i = 0; i < 2; i++) {
     obj.children[0].geometry.computeBoundingBox();
 
     reflectingTable.putOnTable(obj);
+
+    remainingDarts.push(obj);
   });
 }
 
@@ -125,12 +135,12 @@ function animate() {
   reflectingTable.updateCamera(renderer, scene);
   renderer.render(scene, camera);
 
-  if (dartPhysObj != null) {
-    dartPhysObj.updatePosition(sceneMeshes);
+  if (dartToBeLaunched != null) {
+    dartToBeLaunched.updatePosition(sceneMeshes);
 
-    if (actionKeys.SPACEBAR && !dartPhysObj.launched) {
-      dartPhysObj.launch(0, 0.8, 0);
-    }
+    // if (actionKeys.SPACEBAR && !dartToBeLaunched.launched) {
+    //   dartToBeLaunched.launch(0, 0.8, 0);
+    // }
   }
 
   // physicalCube1.reactToCollision(sceneMeshes);
@@ -138,4 +148,73 @@ function animate() {
   // physicalCube2.reactToCollision(sceneMeshes);
 }
 
+export default function launchDart(event) {
+  let selectedForce = event.detail.selectedForce;
+  let selectedDirection = event.detail.selectedDirection;
+  let velocityX = 0;
+  let velocityY = 0;
+  let velocityZ = 0;
+
+  // Choose the appropriate dart velocity based on the selected force and direction
+  switch (selectedForce) {
+    case window.forceBarConstants.GREAT_FORCE:
+      velocityY = 0.8;
+      break;
+    case window.forceBarConstants.GOOD_FORCE:
+      velocityY = 0.5;
+      break;
+    case window.forceBarConstants.BAD_FORCE:
+      velocityY = 0.2;
+      break;
+  }
+  switch (selectedDirection) {
+    case window.directionBarConstants.BAD_DIRECTION_LEFT:
+      velocityX = -0.4;
+      break;
+    case window.directionBarConstants.BAD_DIRECTION_RIGHT:
+      velocityX = 0.4;
+      break;
+    case window.directionBarConstants.GOOD_DIRECTION_LEFT:
+      velocityX = -0.2;
+      break;
+    case window.directionBarConstants.GOOD_DIRECTION_RIGHT:
+      velocityX = 0.2;
+      break;
+    case window.directionBarConstants.GREAT_DIRECTION:
+      velocityX = 0;
+      break;
+  }
+
+  // Generate some random velocity so that the darts do not hit the dartboard always in the same point
+  let randErrX = Math.random() / 10;
+  let randErrY = Math.random() / 10;
+
+  // Launch the dart with the chosen velocity
+  dartToBeLaunched.launch(velocityX+randErrX, velocityY+randErrY, velocityZ);
+
+  // Wait for the dart to reach the dartboard or the ground
+  setTimeout(() => {
+    if (remainingDarts.length > 0) {
+      // There are still some darts to be thrown, then take one and put it in the right position
+      let newDart = remainingDarts.pop();
+      newDart.position.copy(THROWING_POSITION);
+      dartToBeLaunched = new PhysicsDart(newDart, new THREE.Vector3(0, 0, 0));
+      dartToBeLaunched.freezePosition();
+
+      // Display and send the commands
+      window.dispatchEvent(new CustomEvent('needForCommands'));
+    } else {
+      // No darts are left to be launched, then advice the listeners that the game is over
+      window.dispatchEvent(new CustomEvent('gameOver', {
+        detail: {
+          score: score
+        }
+      }));
+    }
+  }, 1000);
+}
+
+// Launch the dart whenever the force and direction have been selected
+window.addEventListener('forceAndDirSelected', launchDart);
+// Start the animation loop
 renderer.setAnimationLoop(animate);
