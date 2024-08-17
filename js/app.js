@@ -1,11 +1,12 @@
 import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
 import {Room, PLANES_DEPTH, WALL_HEIGHT} from 'room';
 import {DartboardLoader, DARTBOARD_LABEL} from 'dartboard'
 import {DartLoader, DART_LABEL, PhysicsDart} from 'dart'
 import ReflectingTable from 'reflecting_table'
 
 // The coordinates where the dart should be placed when it has to be launched
-const THROWING_POSITION = new THREE.Vector3(0, 5.5, (3 / 4) * WALL_HEIGHT);
+const THROWING_POSITION = new THREE.Vector3(0.2, 5.5, (3 / 4) * WALL_HEIGHT);
 // A reference to the dart to be launched (as PhysicsDart)
 let dartToBeLaunched;
 // The list of the remaining darts (as THREE.Group)
@@ -28,19 +29,13 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('game-container').appendChild(renderer.domElement);
 // Move the camera
 camera.up.set(0, 0, 1);
-// camera.position.set(-5, 0, 3 * WALL_HEIGHT / 4 )
-camera.position.set(0, 0, 3 * WALL_HEIGHT / 4)
-// camera.lookAt(0, 0, 0);
-// camera.position.set(10,0, 0)  // side view
-camera.lookAt(0, 0, 3 * WALL_HEIGHT / 4);
+camera.position.set(THROWING_POSITION.x, THROWING_POSITION.y-3.5, THROWING_POSITION.z + 0.5);
 
+// DEBUG
 scene.background = new THREE.Color(0x7792cc);
 
-// DEBUG
-import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
-// DEBUG
 const orbitControls = new OrbitControls(camera, renderer.domElement)
-orbitControls.enableDamping = true
+orbitControls.enableDamping = true;
 
 // Configure the lights
 const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
@@ -66,7 +61,8 @@ DartboardLoader.Load().then(obj => {
   obj.position.y = room.children[1].position.y - PLANES_DEPTH / 2;
   obj.position.z = WALL_HEIGHT * 3 / 4;
 
-  // camera.lookAt(obj.position.x, obj.position.y, obj.position.z);
+  camera.lookAt(obj.position.x, obj.position.y, obj.position.z);
+  orbitControls.target.copy(obj.position);
 });
 
 // Load the dart to be launched
@@ -159,26 +155,33 @@ export default function launchDart(event) {
   switch (selectedForce) {
     case window.forceBarConstants.GREAT_FORCE:
       velocityY = 0.8;
+      score += 100;
       break;
     case window.forceBarConstants.GOOD_FORCE:
       velocityY = 0.5;
+      score += 60;
       break;
     case window.forceBarConstants.BAD_FORCE:
       velocityY = 0.2;
+      score += 30;
       break;
   }
   switch (selectedDirection) {
     case window.directionBarConstants.BAD_DIRECTION_LEFT:
       velocityX = -0.4;
+      score -= 30;
       break;
     case window.directionBarConstants.BAD_DIRECTION_RIGHT:
       velocityX = 0.4;
+      score -= 30;
       break;
     case window.directionBarConstants.GOOD_DIRECTION_LEFT:
       velocityX = -0.2;
+      score -= 15;
       break;
     case window.directionBarConstants.GOOD_DIRECTION_RIGHT:
       velocityX = 0.2;
+      score -= 15;
       break;
     case window.directionBarConstants.GREAT_DIRECTION:
       velocityX = 0;
