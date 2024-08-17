@@ -32,7 +32,8 @@ camera.up.set(0, 0, 1);
 camera.position.set(THROWING_POSITION.x, THROWING_POSITION.y - 3.5, THROWING_POSITION.z + 0.5);
 
 // DEBUG
-scene.background = new THREE.Color(0x7792cc);
+// scene.background = new THREE.Color(0x7792cc);
+scene.background = new THREE.Color(0x000000);
 
 const orbitControls = new OrbitControls(camera, renderer.domElement)
 orbitControls.enableDamping = true;

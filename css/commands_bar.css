@@ -20,15 +20,16 @@
   grid-template-areas: 'left_el center_el center_el right_el';
   gap: 10px;
   font-family: "Press Start 2P", cursive;
-  background-color: #2196F3;
+  background-color: #2e1403;
   padding: 10px;
 }
 
 .row > div {
-  background-color: rgba(255, 255, 255, 0.8); /*DEBUG*/
+  background-color: #693919;
   text-align: center;
   margin: 10px 20px;
   font-size: 23px;
+  color: #fff;
 }
 
 .clickable-element {

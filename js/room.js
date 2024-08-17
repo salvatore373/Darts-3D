@@ -17,7 +17,9 @@ export class Room extends THREE.Group {
     const floor = new THREE.Mesh(
       new THREE.BoxGeometry(FLOOR_WIDTH, FLOOR_HEIGHT, PLANES_DEPTH),
       new THREE.MeshPhongMaterial({
-        color: Colors.PRIMARY_COLOR, side: THREE.DoubleSide,
+        // color: Colors.PRIMARY_COLOR,
+        side: THREE.DoubleSide,
+        map: new THREE.TextureLoader().load('./assets/wood1.png'), transparent: true,
       })
     );
     floor.receiveShadow = true;
