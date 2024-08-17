@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as utils from 'utils'
 import {PhysicalObject, boxCollision} from "physical_object";
 import {DARTBOARD_LABEL} from "dartboard";
+import {WALL_TAG, WALL_HEIGHT} from "room";
 
 const objPath = './assets/throwing_dart_v1_L3.123cce958837-fa5f-4635-8f4a-9e4d59dbe115/11750_throwing_dart_v1_L3.obj';
 const texturePath = './assets/throwing_dart_v1_L3.123cce958837-fa5f-4635-8f4a-9e4d59dbe115/11750_throwing_dart_v1_L3.mtl';
@@ -59,11 +60,17 @@ export class PhysicsDart extends PhysicalObject {
       let collidingObjs = super.reactToCollision(sceneObjectsMeshes);
 
       for (let sceneObj of collidingObjs) {
+        // if (sceneObj.name === DARTBOARD_LABEL || sceneObj.name === WALL_TAG) {
         if (sceneObj.name === DARTBOARD_LABEL) {
+          // Put the dart in the collision position
+          this.object.position.y = sceneObj.position.y;
+
           // Stop the dart from moving
           this.velocity.x = 0;
           this.velocity.y = 0;
           this.velocity.z = 0;
+          // Ensure that the dart looks attached to the dartboard
+          // this.object.position.y = WALL_HEIGHT/2;
           // Stop updating the dart's position
           this.freezePosition();
         }

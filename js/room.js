@@ -1,10 +1,13 @@
 import * as THREE from 'three';
 import * as Colors from 'colors'
 
-const FLOOR_WIDTH = 10;
+const FLOOR_WIDTH = 30;
 const FLOOR_HEIGHT = 20;
 export const WALL_HEIGHT = 10;
 export const PLANES_DEPTH = 0.5;
+
+export const FLOOR_TAG = 'floor';
+export const WALL_TAG = 'wall';
 
 export class Room extends THREE.Group {
   constructor() {
@@ -19,6 +22,7 @@ export class Room extends THREE.Group {
     );
     floor.receiveShadow = true;
     this.floor = floor;
+    floor.name = FLOOR_TAG;
     this.add(floor);
     // Define the wall
     const wall = new THREE.Mesh(
@@ -32,6 +36,7 @@ export class Room extends THREE.Group {
     wall.rotation.x = Math.PI / 2;
     wall.receiveShadow = true;
     wall.castShadow = true;
+    wall.name = WALL_TAG;
     this.wall = wall;
     this.add(wall);
   }

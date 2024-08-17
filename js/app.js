@@ -29,7 +29,7 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 document.getElementById('game-container').appendChild(renderer.domElement);
 // Move the camera
 camera.up.set(0, 0, 1);
-camera.position.set(THROWING_POSITION.x, THROWING_POSITION.y-3.5, THROWING_POSITION.z + 0.5);
+camera.position.set(THROWING_POSITION.x, THROWING_POSITION.y - 3.5, THROWING_POSITION.z + 0.5);
 
 // DEBUG
 scene.background = new THREE.Color(0x7792cc);
@@ -190,10 +190,14 @@ export default function launchDart(event) {
 
   // Generate some random velocity so that the darts do not hit the dartboard always in the same point
   let randErrX = Math.random() / 10;
-  let randErrY = Math.random() / 10;
+  if (Math.random() > 0.5)
+    randErrX *= -1;
+  let randErrZ = Math.random() / 10;
+  if (Math.random() > 0.5)
+    randErrZ *= -1;
 
   // Launch the dart with the chosen velocity
-  dartToBeLaunched.launch(velocityX+randErrX, velocityY+randErrY, velocityZ);
+  dartToBeLaunched.launch(velocityX + randErrX, velocityY, velocityZ + randErrZ);
 
   // Wait for the dart to reach the dartboard or the ground
   setTimeout(() => {
