@@ -38,3 +38,8 @@
     transform: translateY(-0.25em);
   }
 }
+
+.center-element-subtitle {
+  font-size: 13px;
+  margin-top: 8px;
+}

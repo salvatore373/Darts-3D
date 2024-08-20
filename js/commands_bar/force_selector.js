@@ -4,7 +4,7 @@ const barContainer = document.getElementById('force-selector');
 
 let direction = 1; // 1 for right, -1 for left
 let position = 0;
-const speed = 4; // Increased speed of the indicator movement in pixels
+const speed = 16; // Increased speed of the indicator movement in pixels
 let animationId;
 
 const BAD_FORCE = 0;

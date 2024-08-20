@@ -1,6 +1,7 @@
 let playerHint = document.getElementById('player-hint');
 let leftTile = document.getElementById('left-tile');
 let rightTile = document.getElementById('right-tile');
+let scoreIndicator = document.getElementById('score-indicator');
 
 let selectedDirection;
 let selectedForce;
@@ -16,6 +17,7 @@ function loadHtml(selector, url) {
 
 function setInitialView() {
   playerHint.innerText = 'Choose an action';
+  scoreIndicator.innerText = '';
 
   rightTile.innerText = 'Change dart texture';
   rightTile.classList.add('clickable-element');
@@ -30,7 +32,7 @@ function setInitialView() {
 
 }
 
-async function setPlayerView() {
+async function setPlayerView(event) {
   leftTile.classList.remove('clickable-element');
   rightTile.classList.remove('clickable-element');
   leftTile.innerHTML = '';
@@ -38,6 +40,10 @@ async function setPlayerView() {
   let forceIndicLoad = await loadHtml("#left-tile", "./html/force_selector.html");
   let directionIndicLoad = await loadHtml("#right-tile", "./html/direction_selector.html");
   await Promise.all([forceIndicLoad, directionIndicLoad]);
+
+  // If a new score is passed, update the displayed one
+  let score = event === undefined ? undefined : event.detail.score;
+  scoreIndicator.innerText = 'Score: ' + (score === undefined ? 0 : score);
 
   // Display the force and direction selectors and get the selected values
   let selectedCommands = await waitForCommands()
@@ -64,6 +70,7 @@ function setGameOverView(event) {
   let score = event.detail.score;
   leftTile.innerHTML = '';
   rightTile.innerHTML = '';
+  scoreIndicator.innerText = '';
 
   playerHint.innerText = 'Game Over'
 

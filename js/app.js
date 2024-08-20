@@ -210,7 +210,11 @@ export default function launchDart(event) {
       dartToBeLaunched.freezePosition();
 
       // Display and send the commands
-      window.dispatchEvent(new CustomEvent('needForCommands'));
+      window.dispatchEvent(new CustomEvent('needForCommands', {
+        detail: {
+          score: score
+        }
+      }));
     } else {
       // No darts are left to be launched, then advice the listeners that the game is over
       window.dispatchEvent(new CustomEvent('gameOver', {
