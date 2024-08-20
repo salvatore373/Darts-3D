@@ -3,7 +3,7 @@ let animationId;
 
 let angle = -Math.PI / 2; // Start at -π radians
 let direction = 1; // 1 for right (increasing angle), -1 for left (decreasing angle)
-const speed = 0.29; // Speed of the indicator movement (radians per frame)
+const speed = 0.19; // Speed of the indicator movement (radians per frame)
 
 const BAD_DIRECTION_LEFT = 0;
 const GOOD_DIRECTION_LEFT = 1;

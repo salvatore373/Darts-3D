@@ -43,3 +43,12 @@
   font-size: 13px;
   margin-top: 8px;
 }
+
+.square {
+  width: 50px;
+  height: 50px;
+  margin: 8px;
+  display: inline-block;
+  border: 2px solid black;
+  cursor: pointer;
+}

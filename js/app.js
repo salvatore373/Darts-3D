@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/addons/controls/OrbitControls.js'
 import {Room, PLANES_DEPTH, WALL_HEIGHT} from 'room';
 import {DartboardLoader, DARTBOARD_LABEL} from 'dartboard'
-import {DartLoader, DART_LABEL, PhysicsDart} from 'dart'
+import {DartLoader, DART_LABEL, PhysicsDart, changeDefaultDartTexture} from 'dart'
 import ReflectingTable from 'reflecting_table'
 
 // The coordinates where the dart should be placed when it has to be launched
@@ -145,7 +145,7 @@ function animate() {
   // physicalCube2.reactToCollision(sceneMeshes);
 }
 
-export default function launchDart(event) {
+function launchDart(event) {
   let selectedForce = event.detail.selectedForce;
   let selectedDirection = event.detail.selectedDirection;
   let velocityX = 0;
@@ -226,7 +226,36 @@ export default function launchDart(event) {
   }, 1000);
 }
 
+async function changeDartsTexture(event) {
+  let newTexture = event.detail.newTexture;
+  changeDefaultDartTexture(newTexture);
+
+  // dartToBeLaunched
+  let oldObj = dartToBeLaunched.object;
+  scene.remove(oldObj);
+  dartToBeLaunched.object = await DartLoader.Load(newTexture);
+  dartToBeLaunched.object.position.copy(oldObj.position);
+  dartToBeLaunched.object.rotation.copy(oldObj.rotation);
+  dartToBeLaunched.object.children[0].geometry.computeBoundingBox();
+  sceneMeshes.splice(sceneMeshes.indexOf(oldObj), 1, dartToBeLaunched.object);
+  scene.add(dartToBeLaunched.object);
+
+  for (let i = 0; i < remainingDarts.length; i++) {
+    let oldObj = remainingDarts[i];
+    scene.remove(oldObj);
+    let newObj= await DartLoader.Load(newTexture);
+    newObj.position.copy(oldObj.position);
+    newObj.rotation.copy(oldObj.rotation);
+    newObj.children[0].geometry.computeBoundingBox();
+    sceneMeshes.splice(sceneMeshes.indexOf(oldObj), 1, newObj);
+    scene.add(newObj);
+    remainingDarts.splice(i, 1, newObj);
+  }
+}
+
 // Launch the dart whenever the force and direction have been selected
 window.addEventListener('forceAndDirSelected', launchDart);
+// When requested, change the texture of all the darts in the scene
+window.addEventListener('changeTexture', changeDartsTexture);
 // Start the animation loop
 renderer.setAnimationLoop(animate);

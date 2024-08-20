@@ -16,25 +16,80 @@ function loadHtml(selector, url) {
 }
 
 function setInitialView() {
+  console.log('sdfsf') // DEBUG;
+
   playerHint.innerText = 'Choose an action';
   scoreIndicator.innerText = '';
 
   rightTile.innerText = 'Change dart texture';
   rightTile.classList.add('clickable-element');
-  // TODO: finish implementing
+  $(rightTile).one('click', function (e) {
+    setChangeTextureView();
+    e.stopPropagation();
+  });
 
   leftTile.innerText = 'Play';
   leftTile.classList.add('clickable-element');
-  leftTile.onclick = function () {
+  $(leftTile).one('click', function (e) {
     setPlayerView();
-    leftTile.onclick = undefined
-  };
+    e.stopPropagation();
+    $(leftTile).off('click');
+  });
 
+}
+
+async function setChangeTextureView() {
+  playerHint.innerText = 'Choose a new texture for the darts'
+  leftTile.classList.remove('clickable-element');
+  rightTile.classList.remove('clickable-element');
+  $(leftTile).off('click');
+  $(rightTile).off('click');
+  leftTile.innerHTML = '';
+  rightTile.innerHTML = '';
+
+  function sendChangeTextureEvent(selectedTexture) {
+    window.dispatchEvent(new CustomEvent('changeTexture', {
+      detail: {
+        newTexture: selectedTexture
+      }
+    }));
+    setInitialView();
+  }
+
+  // Display color tiles
+  const square1 = document.createElement('div');
+  square1.style.backgroundColor = 'red';
+  square1.className = 'square';
+  square1.classList.add('clickable-element');
+  $(square1).click((e) => {
+    sendChangeTextureEvent(window.dartTextures.red);
+    e.stopPropagation();
+  });
+  const square2 = document.createElement('div');
+  square2.style.backgroundColor = '#4d7529';
+  square2.className = 'square';
+  square2.classList.add('clickable-element');
+  $(square2).click((e) => {
+    sendChangeTextureEvent(window.dartTextures.green);
+    e.stopPropagation();
+  });
+  leftTile.appendChild(square1);
+  leftTile.appendChild(square2);
+
+  // Display cancel
+  rightTile.innerText = 'Cancel'
+  rightTile.classList.add('clickable-element');
+  $(rightTile).one('click', function (e) {
+    setInitialView();
+    e.stopPropagation();
+  });
 }
 
 async function setPlayerView(event) {
   leftTile.classList.remove('clickable-element');
   rightTile.classList.remove('clickable-element');
+  $(leftTile).off('click');
+  $(rightTile).off('click');
   leftTile.innerHTML = '';
   rightTile.innerHTML = '';
   let forceIndicLoad = await loadHtml("#left-tile", "./html/force_selector.html");
@@ -68,6 +123,8 @@ async function waitForCommands() {
 
 function setGameOverView(event) {
   let score = event.detail.score;
+  $(leftTile).off('click');
+  $(rightTile).off('click');
   leftTile.innerHTML = '';
   rightTile.innerHTML = '';
   scoreIndicator.innerText = '';
@@ -76,10 +133,9 @@ function setGameOverView(event) {
 
   leftTile.innerText = 'Try again';
   leftTile.classList.add('clickable-element');
-  leftTile.onclick = function () {
-    leftTile.onclick = undefined
-    location.reload()
-  };
+  $(leftTile).one('click', function (e) {
+    location.reload();
+  });
 
   rightTile.innerText = `Score: ${score}`;
 }
