@@ -11,6 +11,8 @@ const THROWING_POSITION = new THREE.Vector3(0.2, 5.5, (3 / 4) * WALL_HEIGHT);
 let dartToBeLaunched;
 // The list of the remaining darts (as THREE.Group)
 let remainingDarts = [];
+// The list of the darts that have already been launched (as PhysicsDart)
+let launchedDarts = [];
 
 // The points scored by the player
 let score = 0;
@@ -50,14 +52,12 @@ scene.add(dirLight);
 let room = new Room();
 scene.add(room);
 sceneMeshes.push(...room.children);
-for (let c of room.children) c.geometry.computeBoundingBox();
 
 // Load the dartboard
 DartboardLoader.Load().then(obj => {
   scene.add(obj);
 
   sceneMeshes.push(obj);
-  obj.children[0].geometry.computeBoundingBox();
 
   obj.position.y = room.children[1].position.y - PLANES_DEPTH / 2;
   obj.position.z = WALL_HEIGHT * 3 / 4;
@@ -71,7 +71,6 @@ DartLoader.Load().then(obj => {
   scene.add(obj);
 
   sceneMeshes.push(obj);
-  obj.children[0].geometry.computeBoundingBox();
 
   dartToBeLaunched = new PhysicsDart(obj, new THREE.Vector3(0, 0, 0));
   dartToBeLaunched.freezePosition();
@@ -119,7 +118,6 @@ for (let i = 0; i < 2; i++) {
     scene.add(obj);
 
     sceneMeshes.push(obj);
-    obj.children[0].geometry.computeBoundingBox();
 
     reflectingTable.putOnTable(obj);
 
@@ -138,6 +136,11 @@ function animate() {
     // if (actionKeys.SPACEBAR && !dartToBeLaunched.launched) {
     //   dartToBeLaunched.launch(0, 0.8, 0);
     // }
+  }
+
+  // Update the position of the launched darts, as they might be bouncing on the floor
+  for (let physDart of launchedDarts) {
+    physDart.updatePosition(sceneMeshes);
   }
 
   // physicalCube1.reactToCollision(sceneMeshes);
@@ -206,6 +209,7 @@ function launchDart(event) {
       // There are still some darts to be thrown, then take one and put it in the right position
       let newDart = remainingDarts.pop();
       newDart.position.copy(THROWING_POSITION);
+      launchedDarts.push(dartToBeLaunched);
       dartToBeLaunched = new PhysicsDart(newDart, new THREE.Vector3(0, 0, 0));
       dartToBeLaunched.freezePosition();
 
@@ -236,20 +240,31 @@ async function changeDartsTexture(event) {
   dartToBeLaunched.object = await DartLoader.Load(newTexture);
   dartToBeLaunched.object.position.copy(oldObj.position);
   dartToBeLaunched.object.rotation.copy(oldObj.rotation);
-  dartToBeLaunched.object.children[0].geometry.computeBoundingBox();
   sceneMeshes.splice(sceneMeshes.indexOf(oldObj), 1, dartToBeLaunched.object);
   scene.add(dartToBeLaunched.object);
 
+  // remainingDarts
   for (let i = 0; i < remainingDarts.length; i++) {
     let oldObj = remainingDarts[i];
     scene.remove(oldObj);
     let newObj= await DartLoader.Load(newTexture);
     newObj.position.copy(oldObj.position);
     newObj.rotation.copy(oldObj.rotation);
-    newObj.children[0].geometry.computeBoundingBox();
     sceneMeshes.splice(sceneMeshes.indexOf(oldObj), 1, newObj);
     scene.add(newObj);
     remainingDarts.splice(i, 1, newObj);
+  }
+
+  // launchedDarts
+  for (let i = 0; i < launchedDarts.length; i++) {
+    let oldObj = launchedDarts[i];
+    scene.remove(oldObj);
+    let newObj= await DartLoader.Load(newTexture);
+    newObj.position.copy(oldObj.position);
+    newObj.rotation.copy(oldObj.rotation);
+    sceneMeshes.splice(sceneMeshes.indexOf(oldObj), 1, newObj);
+    scene.add(newObj);
+    launchedDarts.splice(i, 1, newObj);
   }
 }
 

@@ -27,8 +27,8 @@ class CollisionInfo {
  * Check for a collision between a PhysicalObject and another object
  */
 export function boxCollision(physObj1, obj2) {
-  const box1 = new THREE.Box3().setFromObject(physObj1.object);
-  const box2 = new THREE.Box3().setFromObject(obj2 instanceof PhysicalObject ? obj2.object : obj2);
+  const box1 = new THREE.Box3().setFromObject(physObj1.object, true);
+  const box2 = new THREE.Box3().setFromObject(obj2 instanceof PhysicalObject ? obj2.object : obj2, true);
   // const box1 = new THREE.Box3();
   // const box2 = new THREE.Box3();
   // box1.copy(mesh1.geometry.boundingBox).applyMatrix4(mesh1.matrixWorld);
