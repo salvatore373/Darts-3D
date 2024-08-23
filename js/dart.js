@@ -77,6 +77,13 @@ export class PhysicsDart extends PhysicalObject {
           // Put the dart in the collision position
           this.object.position.y = sceneObj.position.y;
 
+          // TODO: fire event with x,z coordinates of collision
+          window.dispatchEvent(new CustomEvent('scoreUpdate', {
+            detail: {
+              hitPosition: this.object.position,
+            }
+          }));
+
           // Stop the dart from moving
           this.velocity.x = 0;
           this.velocity.y = 0;

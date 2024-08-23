@@ -16,6 +16,10 @@ let launchedDarts = [];
 
 // The points scored by the player
 let score = 0;
+// The coordinates of the center point of the dartboard
+let dartboardCenter;
+// The radius of the dartboard
+let dartboardRadius;
 
 // Initialize the list of Mesh objects that will populate the scene
 let sceneMeshes = [];
@@ -61,6 +65,10 @@ DartboardLoader.Load().then(obj => {
 
   obj.position.y = room.children[1].position.y - PLANES_DEPTH / 2;
   obj.position.z = WALL_HEIGHT * 3 / 4;
+
+  dartboardCenter = obj.position;
+  let dartboardBox = new THREE.Box3().setFromObject(obj, true);
+  dartboardRadius = (dartboardBox.max.x - dartboardBox.min.x) / 2;
 
   camera.lookAt(obj.position.x, obj.position.y, obj.position.z);
   orbitControls.target.copy(obj.position);
@@ -159,33 +167,26 @@ function launchDart(event) {
   switch (selectedForce) {
     case window.forceBarConstants.GREAT_FORCE:
       velocityY = 0.8;
-      score += 100;
       break;
     case window.forceBarConstants.GOOD_FORCE:
       velocityY = 0.5;
-      score += 60;
       break;
     case window.forceBarConstants.BAD_FORCE:
       velocityY = 0.2;
-      score += 30;
       break;
   }
   switch (selectedDirection) {
     case window.directionBarConstants.BAD_DIRECTION_LEFT:
       velocityX = -0.4;
-      score -= 30;
       break;
     case window.directionBarConstants.BAD_DIRECTION_RIGHT:
       velocityX = 0.4;
-      score -= 30;
       break;
     case window.directionBarConstants.GOOD_DIRECTION_LEFT:
       velocityX = -0.2;
-      score -= 15;
       break;
     case window.directionBarConstants.GOOD_DIRECTION_RIGHT:
       velocityX = 0.2;
-      score -= 15;
       break;
     case window.directionBarConstants.GREAT_DIRECTION:
       velocityX = 0;
@@ -268,9 +269,19 @@ async function changeDartsTexture(event) {
   }
 }
 
+function updateScore(event) {
+  // The coordinates of the point where the dart hit the dartboard
+  let hitPosition = event.detail.hitPosition;
+  // Update the score based on the distance of the hit position from the center of the dartboard
+  let hitCenterDistance = hitPosition.distanceTo(dartboardCenter);
+  score += Math.round(100 * (1 - (hitCenterDistance/dartboardRadius)));
+}
+
 // Launch the dart whenever the force and direction have been selected
 window.addEventListener('forceAndDirSelected', launchDart);
 // When requested, change the texture of all the darts in the scene
 window.addEventListener('changeTexture', changeDartsTexture);
+// When needed, update the score
+window.addEventListener('scoreUpdate', updateScore);
 // Start the animation loop
 renderer.setAnimationLoop(animate);

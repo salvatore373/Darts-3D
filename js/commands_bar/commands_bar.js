@@ -16,8 +16,6 @@ function loadHtml(selector, url) {
 }
 
 function setInitialView() {
-  console.log('sdfsf') // DEBUG;
-
   playerHint.innerText = 'Choose an action';
   scoreIndicator.innerText = '';
 
