@@ -40,6 +40,16 @@ camera.position.set(THROWING_POSITION.x, THROWING_POSITION.y - 3.5, THROWING_POS
 // DEBUG
 // scene.background = new THREE.Color(0x7792cc);
 scene.background = new THREE.Color(0x000000);
+let urls = [
+  './assets/room_cubemap/px1.png', './assets/room_cubemap/nx1.png',
+  './assets/room_cubemap/py1.png', './assets/room_cubemap/ny1.png',
+  './assets/room_cubemap/pz1.png', './assets/room_cubemap/nz1.png',
+];
+let loader = new THREE.CubeTextureLoader();
+scene.background = loader.load(urls);
+scene.backgroundRotation.z = -Math.PI / 3;
+scene.backgroundRotation.x = Math.PI / 2;
+
 
 const orbitControls = new OrbitControls(camera, renderer.domElement)
 orbitControls.enableDamping = true;

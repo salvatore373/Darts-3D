@@ -19,7 +19,7 @@ export class Room extends THREE.Group {
       new THREE.MeshPhongMaterial({
         // color: Colors.PRIMARY_COLOR,
         side: THREE.DoubleSide,
-        map: new THREE.TextureLoader().load('./assets/wood1.png'), transparent: true,
+        map: new THREE.TextureLoader().load('./assets/parquet.png'), transparent: true,
       })
     );
     floor.receiveShadow = true;
