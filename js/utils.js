@@ -28,6 +28,11 @@ export async function loadObj(path, texturePath) {
         const objLoader = new OBJLoader();
         objLoader.setMaterials(materials);
         objLoader.load(path, function (object) {
+          for(let child of object.children) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+
           resolve(object);
         }, undefined, function (error) {
           reject(error);

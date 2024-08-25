@@ -40,6 +40,7 @@ camera.position.set(THROWING_POSITION.x, THROWING_POSITION.y - 3.5, THROWING_POS
 // DEBUG
 // scene.background = new THREE.Color(0x7792cc);
 scene.background = new THREE.Color(0x000000);
+// Display a real world background
 let urls = [
   './assets/room_cubemap/px1.png', './assets/room_cubemap/nx1.png',
   './assets/room_cubemap/py1.png', './assets/room_cubemap/ny1.png',
@@ -49,6 +50,15 @@ let loader = new THREE.CubeTextureLoader();
 scene.background = loader.load(urls);
 scene.backgroundRotation.z = -Math.PI / 3;
 scene.backgroundRotation.x = Math.PI / 2;
+
+// Add a spotlight over the dartboard
+const spotLight = new THREE.SpotLight(0xffffff);
+spotLight.castShadow = true;
+spotLight.intensity = 50;
+spotLight.shadow.focus = 1;
+scene.add(spotLight);
+const spotLightHelper = new THREE.SpotLightHelper(spotLight);
+scene.add(spotLightHelper);
 
 
 const orbitControls = new OrbitControls(camera, renderer.domElement)
@@ -82,6 +92,12 @@ DartboardLoader.Load().then(obj => {
 
   camera.lookAt(obj.position.x, obj.position.y, obj.position.z);
   orbitControls.target.copy(obj.position);
+
+  // Position the spotlight
+  spotLight.position.y = obj.position.y - 2;
+  spotLight.position.z = WALL_HEIGHT;
+  spotLight.target = obj;
+  spotLightHelper.update();
 });
 
 // Load the dart to be launched
@@ -258,7 +274,7 @@ async function changeDartsTexture(event) {
   for (let i = 0; i < remainingDarts.length; i++) {
     let oldObj = remainingDarts[i];
     scene.remove(oldObj);
-    let newObj= await DartLoader.Load(newTexture);
+    let newObj = await DartLoader.Load(newTexture);
     newObj.position.copy(oldObj.position);
     newObj.rotation.copy(oldObj.rotation);
     sceneMeshes.splice(sceneMeshes.indexOf(oldObj), 1, newObj);
@@ -270,7 +286,7 @@ async function changeDartsTexture(event) {
   for (let i = 0; i < launchedDarts.length; i++) {
     let oldObj = launchedDarts[i];
     scene.remove(oldObj);
-    let newObj= await DartLoader.Load(newTexture);
+    let newObj = await DartLoader.Load(newTexture);
     newObj.position.copy(oldObj.position);
     newObj.rotation.copy(oldObj.rotation);
     sceneMeshes.splice(sceneMeshes.indexOf(oldObj), 1, newObj);
@@ -284,7 +300,7 @@ function updateScore(event) {
   let hitPosition = event.detail.hitPosition;
   // Update the score based on the distance of the hit position from the center of the dartboard
   let hitCenterDistance = hitPosition.distanceTo(dartboardCenter);
-  score += Math.round(100 * (1 - (hitCenterDistance/dartboardRadius)));
+  score += Math.round(100 * (1 - (hitCenterDistance / dartboardRadius)));
 }
 
 // Launch the dart whenever the force and direction have been selected
