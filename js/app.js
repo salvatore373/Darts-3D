@@ -37,9 +37,7 @@ document.getElementById('game-container').appendChild(renderer.domElement);
 camera.up.set(0, 0, 1);
 camera.position.set(THROWING_POSITION.x, THROWING_POSITION.y - 3.5, THROWING_POSITION.z + 0.5);
 
-// DEBUG
-// scene.background = new THREE.Color(0x7792cc);
-scene.background = new THREE.Color(0x000000);
+// scene.background = new THREE.Color(0x000000);
 // Display a real world background
 let urls = [
   './assets/room_cubemap/px1.png', './assets/room_cubemap/nx1.png',
@@ -57,9 +55,6 @@ spotLight.castShadow = true;
 spotLight.intensity = 50;
 spotLight.shadow.focus = 1;
 scene.add(spotLight);
-const spotLightHelper = new THREE.SpotLightHelper(spotLight);
-scene.add(spotLightHelper);
-
 
 const orbitControls = new OrbitControls(camera, renderer.domElement)
 orbitControls.enableDamping = true;
@@ -97,7 +92,6 @@ DartboardLoader.Load().then(obj => {
   spotLight.position.y = obj.position.y - 2;
   spotLight.position.z = WALL_HEIGHT;
   spotLight.target = obj;
-  spotLightHelper.update();
 });
 
 // Load the dart to be launched
