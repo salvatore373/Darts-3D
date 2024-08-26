@@ -29,7 +29,7 @@ const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 50);
 const renderer = new THREE.WebGLRenderer({canvas: document.getElementById('game-view')});
 renderer.shadowMap.enabled = true;  // Enable shadows
-// Scale if the game becomes performance intensive (and try adding false as thrid argument)
+// Scale if the game becomes performance intensive (and try adding false as third argument)
 renderer.setSize(window.innerWidth, window.innerHeight);
 // document.body.appendChild(renderer.domElement);
 document.getElementById('game-container').appendChild(renderer.domElement);
@@ -189,7 +189,7 @@ function launchDart(event) {
       velocityY = 0.8;
       break;
     case window.forceBarConstants.GOOD_FORCE:
-      velocityY = 0.5;
+      velocityY = 0.58;
       break;
     case window.forceBarConstants.BAD_FORCE:
       velocityY = 0.2;
