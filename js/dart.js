@@ -3,6 +3,7 @@ import * as utils from 'utils'
 import {PhysicalObject, boxCollision} from "physical_object";
 import {DARTBOARD_LABEL} from "dartboard";
 import {WALL_TAG, WALL_HEIGHT} from "room";
+import {AudioUtils} from 'audio'
 
 const objPath = './assets/throwing_dart_v1_L3.123cce958837-fa5f-4635-8f4a-9e4d59dbe115/11750_throwing_dart_v1_L3.obj';
 
@@ -56,6 +57,26 @@ export class PhysicsDart extends PhysicalObject {
   launched = false;
   isPositionFrozen = false;
 
+  constructor(...args) {
+    super(...args);
+
+    let audioUtils = AudioUtils.getInstance();
+    // Load the launch audio file
+    let a = new THREE.PositionalAudio( audioUtils.listener );
+    this.launchAudio = a;
+    audioUtils.loader.load('./assets/shot.mp3', (buffer) => {
+      this.launchAudio.setBuffer(buffer);
+    });
+    // Load the hit audio file
+    this.hitAudio = new THREE.PositionalAudio( audioUtils.listener );
+    audioUtils.loader.load('./assets/hit.mp3', (buffer) => {
+      this.hitAudio.setBuffer(buffer);
+    });
+
+    this.object.add(this.launchAudio);
+    this.object.add(this.hitAudio);
+  }
+
   freezePosition() {
     this.isPositionFrozen = true;
   }
@@ -77,7 +98,7 @@ export class PhysicsDart extends PhysicalObject {
           // Put the dart in the collision position
           this.object.position.y = sceneObj.position.y;
 
-          // TODO: fire event with x,z coordinates of collision
+          // Fire an event with the x,z coordinates of the collision
           window.dispatchEvent(new CustomEvent('scoreUpdate', {
             detail: {
               hitPosition: this.object.position,
@@ -92,6 +113,9 @@ export class PhysicsDart extends PhysicalObject {
           // this.object.position.y = WALL_HEIGHT/2;
           // Stop updating the dart's position
           this.freezePosition();
+
+          // Play a sound
+          this.hitAudio.play();
         }
       }
     }
@@ -101,5 +125,8 @@ export class PhysicsDart extends PhysicalObject {
     this.isPositionFrozen = false;
     this.launched = true;
     this.velocity = new THREE.Vector3(velocityX, velocityY, velocityZ);
+
+    // Play a sound
+    this.launchAudio.play();
   }
 }

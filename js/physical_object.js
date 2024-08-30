@@ -114,18 +114,15 @@ export class PhysicalObject {
 
         if (collisionInfo.collisionDirection.x !== 0 && !handledCollisionX) {
           handledCollisionX = true;
-          // this.velocity.x *= FRICTION_FACTOR;
           this.velocity.x = -this.velocity.x;
         }
         if (collisionInfo.collisionDirection.y !== 0 && !handledCollisionY) {
           handledCollisionY = true;
-          // this.velocity.y *= FRICTION_FACTOR;
           this.velocity.y = -this.velocity.y;
         }
 
         if (collisionInfo.collisionDirection.z !== 0 && !handledCollisionZ) {
           handledCollisionZ = true;
-          // this.velocity.z *= FRICTION_FACTOR;
           this.velocity.z = -this.velocity.z;
         }
       }
