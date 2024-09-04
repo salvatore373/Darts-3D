@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import * as Colors from 'colors'
+import { Reflector } from 'three/addons/objects/Reflector.js';
 
 const FOOT_HEIGHT = 1;
 const TABLE_DEPTH = .1;
@@ -22,6 +23,12 @@ export default class ReflectingTable extends THREE.Object3D {
       envMap: cubeRenderTarget.texture,
     });
     const plane = new THREE.Mesh(new THREE.BoxGeometry(TABLE_WIDTH, TABLE_HEIGHT, TABLE_DEPTH), material);
+    // const plane = new Reflector( new THREE.BoxGeometry(TABLE_WIDTH, TABLE_HEIGHT, TABLE_DEPTH), {
+    //   clipBias: 0.003,
+    //   textureWidth: window.innerWidth * window.devicePixelRatio,
+    //   textureHeight: window.innerHeight * window.devicePixelRatio,
+    //   color: 0xb5b5b5
+    // } );
     plane.castShadow = true;
     plane.receiveShadow = true;
     plane.add(this.cubeCamera);
