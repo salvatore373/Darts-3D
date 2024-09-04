@@ -62,8 +62,7 @@ export class PhysicsDart extends PhysicalObject {
 
     let audioUtils = AudioUtils.getInstance();
     // Load the launch audio file
-    let a = new THREE.PositionalAudio( audioUtils.listener );
-    this.launchAudio = a;
+    this.launchAudio = new THREE.PositionalAudio( audioUtils.listener );
     audioUtils.loader.load('./assets/shot.mp3', (buffer) => {
       this.launchAudio.setBuffer(buffer);
     });
@@ -115,6 +114,7 @@ export class PhysicsDart extends PhysicalObject {
           this.freezePosition();
 
           // Play a sound
+          this.launchAudio.stop();
           this.hitAudio.play();
         }
       }
