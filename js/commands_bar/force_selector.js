@@ -62,13 +62,15 @@ function startForceIndicatorMotion() {
   // Event listener for spacebar to stop the indicator
   return new Promise((resolve) => {
     let res;
+
     function onSpaceBarPressed(event) {
       if (event.code === 'Space') {
         event.preventDefault();
         res = stopForceIndicator();
+
+        document.removeEventListener('keydown', onSpaceBarPressed);
+        resolve(res);
       }
-      document.removeEventListener('keydown', onSpaceBarPressed);
-      resolve(res);
     }
 
     document.addEventListener('keydown', onSpaceBarPressed);

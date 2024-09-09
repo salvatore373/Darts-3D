@@ -67,9 +67,10 @@ function startDirectionIndicatorMotion() {
       if (event.code === 'Space') {
         event.preventDefault();
         res = stopDirectionIndicator();
+
+        document.removeEventListener('keydown', onSpaceBarPressed);
+        resolve(res);
       }
-      document.removeEventListener('keydown', onSpaceBarPressed);
-      resolve(res);
     }
 
     document.addEventListener('keydown', onSpaceBarPressed);
